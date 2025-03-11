@@ -25,7 +25,7 @@ public class EmployeeReports {
 
 	WebElement pimPageTitle;
 
-	@FindBy(xpath = "//a[text()='EmployeeReports']")
+	@FindBy(xpath = "//a[text()='Reports']")
 
 	WebElement ReportPageLink;
 
@@ -96,7 +96,7 @@ public class EmployeeReports {
 
 	}
 
-	public void addCustomReport(String reportName, HashMap reportFieldMap, Scenario scenario) {
+	public void addCustomReport(String reportName,  Scenario scenario) {
 
 		ElementActions.clickElement(driver, addReportsButton, scenario);
 
@@ -137,8 +137,39 @@ public class EmployeeReports {
 
 	}
 
+	public String searchReport(String reportName, Scenario scenario) {
+
+		ElementActions.sendKeys(driver, reportsNamefield, scenario, reportName);
+
+		Actions objactions = new Actions(driver);
+
+		objactions.sendKeys(Keys.ARROW_DOWN).build().perform();
+
+		objactions.sendKeys(Keys.ENTER).build().perform();
+
+		ElementActions.clickElement(driver, SearchReportButton, scenario);
+
+		return ElementActions.getText(driver, searchedReportName, scenario);
+	}
+
+	public HashMap<String, String> getGeneratedReportFields(Scenario scenario) {
+
+		HashMap<String, String> generatedReportFieldMap = new HashMap();
+
+		ElementActions.clickElement(driver, generateReportButton, scenario);
+
+		generatedReportFieldMap.put("Employee Id", empidFieldinReport.getText());
+
+		generatedReportFieldMap.put("Employee First Name", empfirsNameFieldinReport.getText());
+
+		generatedReportFieldMap.put("Employee Last Name", emplastNameFieldinReport.getText());
+
+		return generatedReportFieldMap;
+
+	}
 	
 	
-	
-	
-}
+
+	}
+
+
