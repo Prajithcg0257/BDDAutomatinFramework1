@@ -4,9 +4,11 @@ import java.util.HashMap;
 
 import com.qa.base.Base;
 import com.qa.pages.AddEmployeePage;
+import com.qa.pages.EmployeeReports;
 import com.qa.pages.LogInPage;
 import com.qa.util.CaptureScreenshot;
 import com.qa.util.ReadProperties;
+import com.qa.util.WaitMethods;
 
 import cucumber.api.DataTable;
 import cucumber.api.Scenario;
@@ -22,6 +24,7 @@ public class EmployeeCRUD extends Base {
 	Scenario scenario;
 	LogInPage objloginPage;
 	AddEmployeePage objAddEmployeePage;
+	EmployeeReports empReports;
 
 	@Before
 	public void logintoApplication(Scenario scenario) {
@@ -136,32 +139,74 @@ public class EmployeeCRUD extends Base {
 		scenario.embed(CaptureScreenshot.captureImage(driver), "image/png");
 
 	}
+	
+	
+	//Report Operations
 
-	
-	
-	@When("^I add Custom Report with below ReportName as <\"([^\"]*)\"> and below Display field group and field names$")
-	public void i_add_Custom_Report_with_below_ReportName_as_and_below_Display_field_group_and_field_names(String arg1, DataTable arg2) throws Throwable {
-	    
+	@When("^I add Custom Report with below ReportName as \"([^\"]*)\" and below Display field group and field names$")
+
+	public void i_add_Custom_Report_with_below_ReportName_as_and_below_Display_field_group_and_field_names(
+
+			String reportName, DataTable reportFieldTable) throws Throwable {
+
+		empReports = new EmployeeReports(driver);
+
+		scenario.write("Navigate to Report page");
+
+		empReports.navigateToReportsPage(scenario);
+
+		WaitMethods.staticWait(5000);
+
+		scenario.embed(CaptureScreenshot.captureImage(driver), "image/png");
+
+		scenario.write("Adding the custom Report with fileds ");
+
+		empReports.addCustomReport(reportName, scenario);
+
+		scenario.embed(CaptureScreenshot.captureImage(driver), "image/png");
+
 	}
 
-	@Then("^I  verify Report is searched in the Report with ReportName as <\"([^\"]*)\">$")
-	public void i_verify_Report_is_searched_in_the_Report_with_ReportName_as(String arg1) throws Throwable {
-	   
-		
-		
+	@Then("^I  verify Report is searched in the Report with ReportName as \"([^\"]*)\"$")
+
+	public void i_verify_Report_is_searched_in_the_Report_with_ReportName_as(String reportName) throws Throwable {
+
+		scenario.write("Searching the crated Report ");
+
+		scenario.embed(CaptureScreenshot.captureImage(driver), "image/png");
+
+		WaitMethods.staticWait(5000);
+
+		empReports.navigateToReportsPage(scenario);
+
+		empReports.searchReport(reportName, scenario);
+
 	}
 
 	@Then("^I verify the Report is generated with below fields$")
-	public void i_verify_the_Report_is_generated_with_below_fields(DataTable arg1) throws Throwable {
-	
-		
-		
-		
+
+	public void i_verify_the_Report_is_generated_with_below_fields(DataTable generatedReportTable) throws Throwable {
+
+		scenario.write("Verifying generatred Report Fields ");
+
+		WaitMethods.staticWait(5000);
+
+		scenario.embed(CaptureScreenshot.captureImage(driver), "image/png");
+
+		Assert.assertEquals(generatedReportTable.raw().get(0).get(1),
+
+				empReports.getGeneratedReportFields(scenario).get("Employee Id"));
+
+		Assert.assertEquals(generatedReportTable.raw().get(2).get(1),
+
+				empReports.getGeneratedReportFields(scenario).get("Employee Last Name"));
+
+		Assert.assertEquals(generatedReportTable.raw().get(1).get(1),
+
+				empReports.getGeneratedReportFields(scenario).get("Employee First Name"));
+
 	}
 
-	
-	
-	
 	@After
 
 	public void closeApplication(Scenario scenario) {
